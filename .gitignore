@@ -14,3 +14,11 @@ data/incidents/*
 !data/incidents/.gitkeep
 *.log
 .DS_Store
+
+# Screenshots and images
+*.png
+*.jpg
+*.jpeg
+*.gif
+*.bmp
+Screenshot*
