@@ -1,4 +1,4 @@
-from datetime import datetime
+from datetime import datetime, UTC
 
 
 class Remediator:
@@ -19,7 +19,7 @@ class Remediator:
             "issue": issue,
             "actions": actions,
             "requires_approval": any(a.get("risk", "low") == "high" for a in actions),
-            "timestamp": datetime.utcnow().isoformat(),
+            "timestamp": datetime.now(UTC).isoformat(),
         }
         self.remediations.append(remediation)
         return remediation

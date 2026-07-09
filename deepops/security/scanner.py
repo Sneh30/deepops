@@ -1,4 +1,4 @@
-from datetime import datetime
+from datetime import datetime, UTC
 
 
 class SecurityScanner:
@@ -18,7 +18,7 @@ class SecurityScanner:
         scan_report = {
             "id": f"scan-{len(self.scans) + 1}",
             "scope": scope,
-            "timestamp": datetime.utcnow().isoformat(),
+            "timestamp": datetime.now(UTC).isoformat(),
             "total_findings": len(findings),
             "critical": sum(1 for f in findings if f["severity"] == "critical"),
             "high": sum(1 for f in findings if f["severity"] == "high"),

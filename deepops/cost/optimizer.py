@@ -1,4 +1,4 @@
-from datetime import datetime
+from datetime import datetime, UTC
 
 
 class CostOptimizer:
@@ -21,9 +21,9 @@ class CostOptimizer:
         audit_report = {
             "id": f"audit-{len(self.audits) + 1}",
             "scope": scope,
-            "timestamp": datetime.utcnow().isoformat(),
+            "timestamp": datetime.now(UTC).isoformat(),
             "total_findings": len(findings),
-            "monthly_waste": "$2,847.50",
+            "monthly_waste": 2847.50,
             "findings": findings,
         }
         self.audits.append(audit_report)
@@ -35,7 +35,7 @@ class CostOptimizer:
             "id": f"opt-{len(self.optimizations) + 1}",
             "scope": scope,
             "actions": actions,
-            "estimated_monthly_savings": "$2,150.00",
+            "estimated_monthly_savings": 2150.00,
             "requires_approval": True,
         }
         self.optimizations.append(optimization)

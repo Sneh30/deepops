@@ -1,4 +1,4 @@
-from datetime import datetime
+from datetime import datetime, UTC
 
 
 class AnomalyDetector:
@@ -24,7 +24,7 @@ class AnomalyDetector:
                 "signal": signal,
                 "anomalies": anomalies,
                 "severity": anomalies[0].get("severity", "info"),
-                "detected_at": datetime.utcnow().isoformat(),
+                "detected_at": datetime.now(UTC).isoformat(),
             }
             self.alerts.append(alert)
             return alert

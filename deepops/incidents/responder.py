@@ -1,4 +1,4 @@
-from datetime import datetime
+from datetime import datetime, UTC
 
 
 class IncidentResponder:
@@ -27,7 +27,7 @@ class IncidentResponder:
             "alert": alert,
             "timeline": timeline,
             "status": "investigating",
-            "created_at": datetime.utcnow().isoformat(),
+            "created_at": datetime.now(UTC).isoformat(),
         }
 
         self.incidents.append(incident)
@@ -53,12 +53,14 @@ class IncidentResponder:
         }
 
     def _build_timeline(self, alert, context):
+        from datetime import timedelta
+        now = datetime.now(UTC)
         return [
-            {"time": datetime.utcnow().isoformat(), "event": "Alert received", "detail": str(alert)},
-            {"time": datetime.utcnow().isoformat(), "event": "Gathering logs", "detail": "Collecting recent logs from affected services"},
-            {"time": datetime.utcnow().isoformat(), "event": "Checking metrics", "detail": "Correlating metric spikes"},
-            {"time": datetime.utcnow().isoformat(), "event": "Recent deployments", "detail": "Checking recent Git commits"},
-            {"time": datetime.utcnow().isoformat(), "event": "Identifying owner", "detail": "Looking up service ownership"},
+            {"time": (now - timedelta(seconds=120)).isoformat(), "event": "Alert received", "detail": str(alert)},
+            {"time": (now - timedelta(seconds=90)).isoformat(), "event": "Gathering logs", "detail": "Collecting recent logs from affected services"},
+            {"time": (now - timedelta(seconds=60)).isoformat(), "event": "Checking metrics", "detail": "Correlating metric spikes"},
+            {"time": (now - timedelta(seconds=30)).isoformat(), "event": "Recent deployments", "detail": "Checking recent Git commits"},
+            {"time": now.isoformat(), "event": "Identifying owner", "detail": "Looking up service ownership"},
         ]
 
     def _summarize(self, incident):

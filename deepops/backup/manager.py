@@ -1,4 +1,4 @@
-from datetime import datetime, timedelta
+from datetime import datetime, timedelta, UTC
 
 
 class BackupManager:
@@ -25,7 +25,7 @@ class BackupManager:
             "status": "completed",
             "size": "4.2 GB",
             "type": "incremental",
-            "timestamp": datetime.utcnow().isoformat(),
+            "timestamp": datetime.now(UTC).isoformat(),
             "retention": "30 days",
             "location": "s3://deepops-backups/production/",
             "cross_region_replica": "us-west-2",
@@ -48,7 +48,7 @@ class BackupManager:
             "backup_id": backup_id,
             "target": target or "original",
             "status": "in_progress",
-            "estimated_completion": (datetime.utcnow() + timedelta(minutes=5)).isoformat(),
+            "estimated_completion": (datetime.now(UTC) + timedelta(minutes=5)).isoformat(),
             "verification": "pending",
         }
         self.restores.append(restore)

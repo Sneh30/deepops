@@ -1,10 +1,10 @@
 import json
 import os
-from datetime import datetime
+from datetime import datetime, UTC
 
-
-MEMORY_DIR = os.path.join(os.path.dirname(__file__), "..", "..", "data", "memory")
-INCIDENTS_DIR = os.path.join(os.path.dirname(__file__), "..", "..", "data", "incidents")
+_DATA_DIR = os.environ.get("DEEPOPS_DATA_DIR", os.path.join(os.path.expanduser("~"), ".deepops", "data"))
+MEMORY_DIR = os.path.join(_DATA_DIR, "memory")
+INCIDENTS_DIR = os.path.join(_DATA_DIR, "incidents")
 
 
 class LearningEngine:
@@ -16,23 +16,23 @@ class LearningEngine:
     def _load_index(self):
         index_path = os.path.join(MEMORY_DIR, "index.json")
         if os.path.exists(index_path):
-            with open(index_path) as f:
+            with open(index_path, "r", encoding="utf-8") as f:
                 self.index = json.load(f)
         else:
             self.index = {"incidents": [], "patterns": [], "learned_actions": []}
             self._save_index()
 
     def _save_index(self):
-        with open(os.path.join(MEMORY_DIR, "index.json"), "w") as f:
+        with open(os.path.join(MEMORY_DIR, "index.json"), "w", encoding="utf-8") as f:
             json.dump(self.index, f, indent=2)
 
     def record_incident(self, incident):
-        incident["learned_at"] = datetime.utcnow().isoformat()
+        incident["learned_at"] = datetime.now(UTC).isoformat()
         incident_id = f"inc-{len(self.index['incidents']) + 1}"
         incident["id"] = incident_id
 
         path = os.path.join(INCIDENTS_DIR, f"{incident_id}.json")
-        with open(path, "w") as f:
+        with open(path, "w", encoding="utf-8") as f:
             json.dump(incident, f, indent=2)
 
         self.index["incidents"].append({
@@ -50,16 +50,17 @@ class LearningEngine:
             if query.lower() in entry.get("summary", "").lower():
                 path = os.path.join(INCIDENTS_DIR, f"{entry['id']}.json")
                 if os.path.exists(path):
-                    with open(path) as f:
+                    with open(path, "r", encoding="utf-8") as f:
                         matches.append(json.load(f))
         return matches
 
     def learn(self, pattern, action, outcome):
+        outcome = outcome or {}
         self.index["patterns"].append({
             "pattern": pattern,
             "action": action,
             "outcome": outcome,
-            "learned_at": datetime.utcnow().isoformat(),
+            "learned_at": datetime.now(UTC).isoformat(),
             "confidence": outcome.get("success", False),
         })
         self._save_index()

@@ -54,8 +54,15 @@ def cmd_interactive(args):
                 print(json.dumps(orch.status(), indent=2))
                 continue
 
-            result = orch.dispatch(inp)
-            print(json.dumps(result, indent=2))
+            if len(inp) > 10000:
+                print("Error: Input too long")
+                continue
+
+            try:
+                result = orch.dispatch(inp)
+                print(json.dumps(result, indent=2))
+            except Exception as e:
+                print(json.dumps({"error": str(e)}, indent=2))
 
         except KeyboardInterrupt:
             orch.stop()
@@ -68,14 +75,20 @@ def cmd_interactive(args):
 def cmd_execute(args):
     orch = init_orchestrator()
     orch.start()
-    result = orch.dispatch(" ".join(args.input))
+    input_text = " ".join(args.input)
+    if len(input_text) > 10000:
+        print("Error: Input too long")
+        return
+    result = orch.dispatch(input_text)
     print(json.dumps(result, indent=2))
     orch.stop()
 
 
 def cmd_status(args):
     orch = init_orchestrator()
+    orch.start()
     print(json.dumps(orch.status(), indent=2))
+    orch.stop()
 
 
 def print_help():

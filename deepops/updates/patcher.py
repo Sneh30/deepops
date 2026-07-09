@@ -1,4 +1,4 @@
-from datetime import datetime
+from datetime import datetime, UTC
 
 
 class Patcher:
@@ -24,7 +24,7 @@ class Patcher:
             "status": "planned",
             "requires_approval": True,
             "rollback_plan": self._rollback_plan(updates),
-            "timestamp": datetime.utcnow().isoformat(),
+            "timestamp": datetime.now(UTC).isoformat(),
         }
         self.updates.append(update_job)
         return update_job
@@ -35,7 +35,7 @@ class Patcher:
             "kubernetes_upgrades": ["v1.28.4", "v1.29.0"],
             "docker_updates": ["24.0.7"],
             "library_updates": 12,
-            "last_checked": datetime.utcnow().isoformat(),
+            "last_checked": datetime.now(UTC).isoformat(),
         }
 
     def _plan_updates(self, scope):

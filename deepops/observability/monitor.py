@@ -1,4 +1,4 @@
-from datetime import datetime
+from datetime import datetime, UTC
 
 
 class Monitor:
@@ -22,7 +22,7 @@ class Monitor:
     def watch(self, target):
         watch = {
             "target": target,
-            "since": datetime.utcnow().isoformat(),
+            "since": datetime.now(UTC).isoformat(),
             "status": "watching",
             "metrics_collected": ["cpu", "memory", "disk", "network", "latency", "error_rate"],
         }
@@ -31,7 +31,7 @@ class Monitor:
 
     def get_metrics(self, name="all"):
         return {
-            "timestamp": datetime.utcnow().isoformat(),
+            "timestamp": datetime.now(UTC).isoformat(),
             "metrics": {
                 "cpu": {"avg": 45.2, "p95": 78.3, "p99": 92.1},
                 "memory": {"avg": 62.8, "p95": 85.4, "p99": 94.7},
@@ -51,7 +51,7 @@ class Monitor:
         ]
         self.checks = checks
         return {
-            "timestamp": datetime.utcnow().isoformat(),
+            "timestamp": datetime.now(UTC).isoformat(),
             "overall": "degraded",
             "checks": checks,
         }

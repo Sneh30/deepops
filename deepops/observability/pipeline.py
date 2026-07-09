@@ -1,4 +1,4 @@
-from datetime import datetime
+from datetime import datetime, UTC
 
 
 class Pipeline:
@@ -21,14 +21,14 @@ class Pipeline:
         return {
             "ingested": True,
             "type": data_type or "metrics",
-            "timestamp": datetime.utcnow().isoformat(),
+            "timestamp": datetime.now(UTC).isoformat(),
             "source_count": len(self.sources),
             "pipeline_status": "running",
         }
 
     def add_source(self, source):
         source["id"] = f"src-{len(self.sources) + 1}"
-        source["connected_at"] = datetime.utcnow().isoformat()
+        source["connected_at"] = datetime.now(UTC).isoformat()
         self.sources.append(source)
         return {"source": source, "status": "connected"}
 

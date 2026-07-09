@@ -1,4 +1,4 @@
-from datetime import datetime
+from datetime import datetime, UTC
 
 
 class AutoScaler:
@@ -21,7 +21,7 @@ class AutoScaler:
         decision = "scale_up" if prediction.get("load_increasing") else "maintain"
 
         event = {
-            "timestamp": datetime.utcnow().isoformat(),
+            "timestamp": datetime.now(UTC).isoformat(),
             "context": context,
             "prediction": prediction,
             "decision": decision,
