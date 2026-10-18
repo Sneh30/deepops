@@ -2,6 +2,12 @@
 
 ## Explainer video
 
+<video src="https://github.com/user-attachments/assets/ff8e9176-fe82-4576-ba73-72ea3df13d57" controls playsinline preload="metadata"></video>
+
+---
+
+## Explainer video
+
 [▶ Watch the explainer video](explainer.mp4)
 
 ---
