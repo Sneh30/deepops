@@ -1,5 +1,11 @@
 # DeepOps — Autonomous SRE Platform
 
+## Explainer video
+
+[▶ Watch the explainer video](explainer.mp4)
+
+---
+
 > An AI-powered autonomous cloud operations platform that behaves like an experienced SRE team.
 
 **Status:** Early prototype — active development.
