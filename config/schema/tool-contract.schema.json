@@ -1,0 +1,104 @@
+{
+  "$schema": "https://json-schema.org/draft/2020-12/schema",
+  "$id": "https://opspilot.local/schema/tool-contract.schema.json",
+  "title": "OpsPilot Tool Contract",
+  "description": "Contract every COMP-02/COMP-03 tool must expose (SAS.md §4, ENGINEERING_REFERENCE.md §4.1).",
+  "type": "object",
+  "additionalProperties": false,
+  "required": [
+    "name",
+    "kind",
+    "description",
+    "version",
+    "input_schema",
+    "output_schema",
+    "execution_policy",
+    "error_modes",
+    "risk_categories",
+    "requires_checkpoint",
+    "requires_approval_evaluation"
+  ],
+  "properties": {
+    "name": { "type": "string", "pattern": "^[a-z][a-z0-9_]{2,63}$" },
+    "kind": { "enum": ["read_only", "mutating"] },
+    "description": { "type": "string", "minLength": 10 },
+    "version": { "type": "string", "pattern": "^[0-9]+\\.[0-9]+$" },
+    "input_schema": { "type": "object" },
+    "output_schema": { "type": "object" },
+    "execution_policy": {
+      "type": "object",
+      "additionalProperties": false,
+      "required": ["timeout_seconds"],
+      "properties": {
+        "timeout_seconds": { "type": "integer", "minimum": 1, "maximum": 3600 },
+        "max_retries": { "type": "integer", "minimum": 0, "maximum": 10 },
+        "retry_backoff": {
+          "type": "object",
+          "additionalProperties": false,
+          "required": ["base_seconds", "cap_seconds"],
+          "properties": {
+            "base_seconds": { "type": "number", "minimum": 0, "maximum": 60 },
+            "cap_seconds": { "type": "number", "minimum": 0, "maximum": 600 }
+          }
+        },
+        "retryable_error_modes": {
+          "type": "array",
+          "items": { "enum": ["EXECUTION_FAILED", "TIMEOUT_EXCEEDED"] }
+        }
+      }
+    },
+    "post_execution_verification": {
+      "type": "array",
+      "items": { "type": "string", "minLength": 1 }
+    },
+    "error_modes": {
+      "type": "array",
+      "minItems": 1,
+      "items": {
+        "enum": [
+          "PRECONDITION_FAILED",
+          "APPROVAL_REQUIRED",
+          "APPROVAL_DENIED",
+          "APPROVAL_TIMEOUT",
+          "EXECUTION_FAILED",
+          "TIMEOUT_EXCEEDED",
+          "VERIFICATION_FAILED",
+          "CHECKPOINT_FAILED"
+        ]
+      }
+    },
+    "risk_categories": {
+      "type": "array",
+      "uniqueItems": true,
+      "items": {
+        "enum": ["destructive", "irreversible", "externally_visible", "security_sensitive"]
+      }
+    },
+    "requires_checkpoint": { "type": "boolean" },
+    "requires_approval_evaluation": { "type": "boolean" }
+  },
+  "allOf": [
+    {
+      "if": { "properties": { "kind": { "const": "mutating" } } },
+      "then": {
+        "required": ["post_execution_verification"],
+        "properties": {
+          "requires_checkpoint": { "const": true },
+          "requires_approval_evaluation": { "const": true },
+          "execution_policy": {
+            "required": ["max_retries", "retry_backoff", "retryable_error_modes"]
+          }
+        }
+      }
+    },
+    {
+      "if": { "properties": { "kind": { "const": "read_only" } } },
+      "then": {
+        "properties": {
+          "requires_checkpoint": { "const": false },
+          "requires_approval_evaluation": { "const": false }
+        }
+      }
+    }
+  ]
+}

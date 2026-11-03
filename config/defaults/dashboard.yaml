@@ -1,0 +1,57 @@
+# Mission Control dashboard (COMP-13, UI_SPEC.md). No secrets in this file.
+# The dashboard runs as its own Windows Service (OpsPilotDashboardUI) and only
+# reads the event journal / logs / Prometheus - it never calls the Control Plane.
+version: "1"
+server:
+  host: 127.0.0.1
+  port: 8090
+  path_prefix: /mission-control
+  title: OpsPilot Mission Control
+  allowed_origins: []
+journal:
+  # null means <data_dir>/logs/events.jsonl
+  path: null
+  max_bytes: 20971520
+  max_files: 3
+  poll_interval_ms: 50
+state:
+  session_grace_seconds: 30
+  session_idle_seconds: 3600
+  query_stale_seconds: 600
+  recent_events: 500
+  trace_limit: 200
+  token_buffer_chars: 20000
+  snapshot_path: null
+  snapshot_interval_seconds: 5
+services:
+  palette:
+    - "#39d0ff"
+    - "#5cf2a0"
+    - "#ffb547"
+    - "#ff5c8a"
+    - "#b58cff"
+    - "#4ce0d2"
+    - "#f2e85c"
+    - "#ff8a5c"
+observability:
+  prometheus_url: http://127.0.0.1:9090
+  scrape_interval_seconds: 15
+  timeout_seconds: 5
+  queries:
+    - name: cpu_percent
+      query: 100 - (avg(rate(windows_cpu_time_total{mode="idle"}[5m])) * 100)
+    - name: memory_available_bytes
+      query: windows_memory_available_bytes
+    - name: disk_free_bytes
+      query: windows_logical_disk_free_bytes
+    - name: http_requests_per_second
+      query: sum(rate(caddy_http_requests_total[5m]))
+ingest:
+  # Session/query telemetry from a named per-database adapter (ADR-008).
+  # Disabled by default; no adapter is assumed until a target DB engine is named.
+  enabled: false
+  token_env: OPSPILOT_DASHBOARD_INGEST_TOKEN
+  max_request_bytes: 65536
+logs:
+  glob: "*.jsonl"
+  limit: 500

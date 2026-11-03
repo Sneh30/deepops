@@ -1,0 +1,27 @@
+{
+  "$schema": "https://json-schema.org/draft/2020-12/schema",
+  "$id": "https://opspilot.local/schema/approval-policy.schema.json",
+  "title": "OpsPilot Approval Policy",
+  "description": "Machine-readable mirror of MASTER_PROMPT.md §6 approval categories (COMP-04, FR-092).",
+  "type": "object",
+  "additionalProperties": false,
+  "required": [
+    "version",
+    "approval_required_categories",
+    "request_ttl_seconds",
+    "require_rollback_plan"
+  ],
+  "properties": {
+    "version": { "const": "1" },
+    "approval_required_categories": {
+      "type": "array",
+      "minItems": 1,
+      "uniqueItems": true,
+      "items": {
+        "enum": ["destructive", "irreversible", "externally_visible", "security_sensitive"]
+      }
+    },
+    "request_ttl_seconds": { "type": "integer", "minimum": 60, "maximum": 86400 },
+    "require_rollback_plan": { "type": "boolean" }
+  }
+}

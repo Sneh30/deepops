@@ -1,0 +1,134 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="utf-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1">
+  <meta name="color-scheme" content="dark">
+  <title>OpsPilot Mission Control</title>
+  <link rel="stylesheet" href="styles.css">
+</head>
+<body>
+  <div class="shell">
+    <header class="topbar">
+      <div class="brand">
+        <span class="brand-mark" aria-hidden="true">OP</span>
+        <div>
+          <h1>MISSION CONTROL</h1>
+          <p>OPSPILOT CLOUD · COMP-13 · LIVE STATE</p>
+        </div>
+      </div>
+      <div class="tiles" id="tiles" role="list" aria-label="Platform capability status"></div>
+      <div class="link-state" id="link-state" data-state="connecting" role="status">CONNECTING</div>
+    </header>
+
+    <main class="maingrid panel">
+      <div class="panel-head">
+        <div>
+          <h2>USERS × SERVICES</h2>
+          <p id="matrix-sub">access matrix · real session and query events only</p>
+        </div>
+        <div class="matrix-actions">
+          <span id="adapter-badge" class="badge muted">DB ADAPTER: NOT CONNECTED</span>
+          <button class="btn" id="freeze-toggle" type="button" aria-pressed="false">FREEZE FRAME</button>
+        </div>
+      </div>
+      <div id="frozen-banner" class="frozen-banner hidden" role="status"></div>
+      <div id="cell-detail" class="cell-detail hidden"></div>
+      <div class="matrix-wrap" id="matrix-wrap">
+        <div class="matrix" id="matrix"></div>
+      </div>
+      <div class="empty hidden" id="matrix-empty">
+        <div>
+          <strong>NO USER × SERVICE TELEMETRY YET</strong><br>
+          The grid lights only from real <code>session.*</code> and <code>query.*</code> events.<br>
+          <span id="matrix-empty-detail">A named per-database adapter is the remaining deployment-specific wiring (ADR-008).</span>
+        </div>
+      </div>
+    </main>
+
+    <aside class="rail panel">
+      <div class="tabs" role="tablist" aria-label="Right rail">
+        <button class="tab-button active" type="button" role="tab" aria-selected="true" data-tab="summary">SERVER SUMMARY</button>
+        <button class="tab-button" type="button" role="tab" aria-selected="false" data-tab="observability">OBSERVABILITY</button>
+        <button class="tab-button" type="button" role="tab" aria-selected="false" data-tab="thinking">AGENT THINKING</button>
+      </div>
+
+      <section class="tab-panel active" id="tab-summary" role="tabpanel">
+        <div class="instrument" id="instrument"></div>
+        <div class="rail-block">
+          <h3>LAST DEPLOYMENT</h3>
+          <div id="last-deployment" class="kv-list"></div>
+        </div>
+        <div class="rail-block">
+          <h3>PENDING APPROVALS</h3>
+          <div id="pending-approvals" class="kv-list"></div>
+        </div>
+        <div class="rail-block">
+          <h3>WEEKLY REPORT</h3>
+          <div id="weekly-report" class="kv-list"></div>
+        </div>
+        <div class="rail-block">
+          <h3>UTILIZATION (LAST SAMPLE)</h3>
+          <div id="utilization" class="kv-list"></div>
+        </div>
+      </section>
+
+      <section class="tab-panel" id="tab-observability" role="tabpanel">
+        <div class="tab-toolbar">
+          <label for="log-filter">FILTER</label>
+          <select id="log-filter">
+            <option value="">ALL COMPONENTS</option>
+          </select>
+          <span id="metrics-status" class="badge muted">METRICS: WAITING</span>
+        </div>
+        <div class="metric-cards" id="metric-cards"></div>
+        <div class="log-stream" id="log-stream" aria-live="polite"></div>
+      </section>
+
+      <section class="tab-panel" id="tab-thinking" role="tabpanel">
+        <div class="thinking-toolbar">
+          <div class="mode-toggle" role="group" aria-label="Agent thinking mode">
+            <button type="button" class="active" data-mode="trace">STRUCTURED TRACE</button>
+            <button type="button" data-mode="tokens">RAW TOKENS</button>
+          </div>
+          <span id="thinking-status" class="badge muted">TRACE: LIVE</span>
+        </div>
+        <div id="thinking-note" class="thinking-note hidden"></div>
+        <div class="trace-stream" id="trace-stream" aria-live="polite"></div>
+        <div class="token-stream hidden" id="token-stream" aria-live="polite"></div>
+      </section>
+    </aside>
+
+    <footer class="bottomstrip panel">
+      <div class="users-table-wrap">
+        <div class="panel-head small">
+          <h2>CONNECTED USERS</h2>
+          <span id="user-count" class="badge muted">0</span>
+        </div>
+        <table>
+          <thead>
+            <tr>
+              <th data-sort="user">USER</th>
+              <th data-sort="ip">IP</th>
+              <th data-sort="connected_since">SINCE</th>
+              <th data-sort="service_count">SERVICES</th>
+              <th data-sort="status">STATE</th>
+            </tr>
+          </thead>
+          <tbody id="users-body"></tbody>
+        </table>
+      </div>
+      <div class="ticker-wrap">
+        <div class="panel-head small">
+          <h2>LIVE EVENT TICKER</h2>
+          <span id="ticker-rate" class="badge muted">0 EVT</span>
+        </div>
+        <div class="ticker" id="ticker" aria-live="polite"></div>
+      </div>
+    </footer>
+  </div>
+
+  <div id="toast" class="toast hidden" role="alert"></div>
+  <script src="app.js"></script>
+</body>
+</html>

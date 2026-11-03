@@ -1,0 +1,29 @@
+# Reference application deployment (FR-010/FR-012). No secrets in this file.
+version: "1"
+app:
+  name: example-app
+  package_type: windows_service
+  package_path: C:\OpsPilot\packages\example-app
+  version: "1.4.2"
+  environment: production
+  service_account: NT AUTHORITY\LocalService
+  executable: example-app.exe
+  arguments:
+    - --port
+    - "{port}"
+  ports:
+    - 8080
+  health_check:
+    type: http
+    url: http://127.0.0.1:8080/health
+    interval_seconds: 15
+    timeout_seconds: 5
+    success_threshold: 2
+    failure_threshold: 3
+  env:
+    ASPNETCORE_ENVIRONMENT: Production
+rollout:
+  strategy: blue_green
+  verification_window_seconds: 120
+  stability_window_seconds: 300
+  max_failed_health_checks: 3

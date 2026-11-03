@@ -1,0 +1,40 @@
+# Alert thresholds (FR-042). SMTP credentials are referenced, never stored here.
+version: "1"
+rules:
+  - name: high-cpu
+    severity: warning
+    metric: cpu_percent
+    operator: gt
+    threshold: 85
+    for_seconds: 300
+    description: Host CPU above 85% for five minutes.
+  - name: memory-pressure
+    severity: warning
+    metric: memory_percent
+    operator: gt
+    threshold: 90
+    for_seconds: 300
+    description: Host memory above 90% for five minutes.
+  - name: disk-pressure
+    severity: critical
+    metric: disk_percent
+    operator: gt
+    threshold: 90
+    for_seconds: 60
+    description: System disk above 90% used.
+  - name: service-down
+    severity: critical
+    metric: service_up
+    operator: eq
+    threshold: 0
+    for_seconds: 60
+    description: Managed service is not running.
+notification:
+  channel: email
+  recipients:
+    - ops@example.invalid
+  from_address: opspilot@example.invalid
+  smtp_host: smtp.example.invalid
+  smtp_port: 587
+  use_starttls: true
+  credential_ref: smtp-primary

@@ -1,0 +1,58 @@
+name: Deploy
+
+# FR-020: a merge to the release branch triggers repository_dispatch; this
+# workflow runs on the self-hosted Windows runner that hosts the control plane.
+# The GitHub Environment provides the human approval boundary; the cutover
+# approval reference is supplied in the dispatch payload and is single-use.
+on:
+  repository_dispatch:
+    types: [opspilot-deploy]
+
+permissions:
+  contents: read
+
+jobs:
+  deploy:
+    name: Blue/green deploy on the control-plane host
+    runs-on: [self-hosted, windows, opspilot-control-plane]
+    environment: production
+    concurrency:
+      group: opspilot-production
+      cancel-in-progress: false
+    steps:
+      - uses: actions/checkout@v4
+        with:
+          ref: ${{ github.event.client_payload.ref || github.ref }}
+
+      - uses: actions/setup-python@v5
+        with:
+          python-version: "3.11"
+          cache: pip
+
+      - name: Install dependencies
+        run: python -m pip install -r requirements.txt
+
+      - name: Deploy
+        shell: pwsh
+        env:
+          OPSPILOT_DOMAIN: ${{ github.event.client_payload.domain }}
+          OPSPILOT_EMAIL: ${{ github.event.client_payload.email }}
+          OPSPILOT_APPROVAL_REF: ${{ github.event.client_payload.approval_ref }}
+          OPSPILOT_ACME_STAGING: ${{ github.event.client_payload.acme_staging }}
+        run: |
+          if (-not $env:OPSPILOT_DOMAIN -or -not $env:OPSPILOT_EMAIL) {
+            throw 'dispatch payload must include domain and email'
+          }
+          if (-not $env:OPSPILOT_APPROVAL_REF) {
+            throw 'dispatch payload must include a one-time cutover approval_ref'
+          }
+          $args = @(
+            '-m', 'orchestrator.cli', 'deploy',
+            '--deployment-config', 'config/defaults/deployment.yaml',
+            '--domain', $env:OPSPILOT_DOMAIN,
+            '--email', $env:OPSPILOT_EMAIL,
+            '--cutover-approval-ref', $env:OPSPILOT_APPROVAL_REF
+          )
+          if ($env:OPSPILOT_ACME_STAGING -eq 'true') { $args += '--acme-staging' }
+          & python @args
+          if ($LASTEXITCODE -ne 0) { throw "deploy failed with exit code $LASTEXITCODE" }

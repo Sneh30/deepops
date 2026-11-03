@@ -1,0 +1,42 @@
+name: Release
+
+on:
+  push:
+    tags:
+      - "v*"
+
+permissions:
+  contents: write
+
+jobs:
+  release:
+    name: Build and publish phase bundle
+    runs-on: ubuntu-latest
+    steps:
+      - uses: actions/checkout@v4
+        with:
+          fetch-depth: 0
+
+      - uses: actions/setup-python@v5
+        with:
+          python-version: "3.11"
+
+      - name: Install build dependencies
+        run: |
+          python -m pip install --upgrade pip
+          python -m pip install -r requirements.txt
+
+      - name: Build bundle and Handoff Manifest
+        env:
+          PHASE: ${{ vars.OPSPILOT_PHASE || '6' }}
+          PYTHONPATH: src
+        run: python -m orchestrator.bundle --phase "$PHASE"
+
+      - name: Attach bundle to the GitHub Release
+        uses: softprops/action-gh-release@v2
+        with:
+          files: |
+            dist/opspilot-cloud-*.zip
+            handoff/HANDOFF_*.md
+          fail_on_unmatched_files: true
+          generate_release_notes: true

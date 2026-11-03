@@ -1,0 +1,10 @@
+# Approval policy (MASTER_PROMPT.md §6, FR-092). All four categories require a
+# human approval reference; only calls with an empty risk set auto-clear.
+version: "1"
+approval_required_categories:
+  - destructive
+  - irreversible
+  - externally_visible
+  - security_sensitive
+request_ttl_seconds: 3600
+require_rollback_plan: true

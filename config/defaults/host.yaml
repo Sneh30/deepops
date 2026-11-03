@@ -1,0 +1,22 @@
+# Baseline host intent (FR-001). No secrets in this file.
+version: "1"
+host:
+  name: opspilot-demo
+  os_family: windows
+  timezone: UTC
+  admin_account: opspilot-admin
+  service_account: NT AUTHORITY\LocalService
+  rdp_enabled: false
+network:
+  allowed_inbound_tcp_ports:
+    - 80
+    - 443
+  metrics_scrape_cidrs:
+    - 127.0.0.1/32
+  dns_servers: []
+features:
+  containers: false
+  hyper_v: false
+tags:
+  managed-by: opspilot-cloud
+  environment: production

@@ -1,0 +1,65 @@
+{
+  "$schema": "https://json-schema.org/draft/2020-12/schema",
+  "$id": "https://opspilot.local/schema/alert-rules.schema.json",
+  "title": "OpsPilot Alert Rules",
+  "description": "Incident Engine alert thresholds and notification channel (FR-042, ADR-005). No credentials in this file.",
+  "type": "object",
+  "additionalProperties": false,
+  "required": ["version", "rules", "notification"],
+  "properties": {
+    "version": { "const": "1" },
+    "rules": {
+      "type": "array",
+      "minItems": 1,
+      "items": {
+        "type": "object",
+        "additionalProperties": false,
+        "required": ["name", "severity", "metric", "operator", "threshold", "for_seconds"],
+        "properties": {
+          "name": { "type": "string", "pattern": "^[a-z][a-z0-9-]{1,63}$" },
+          "severity": { "enum": ["warning", "critical"] },
+          "metric": {
+            "enum": [
+              "cpu_percent",
+              "memory_percent",
+              "disk_percent",
+              "service_up",
+              "health_check_failed",
+              "network_in_bytes_per_second"
+            ]
+          },
+          "operator": { "enum": ["gt", "gte", "lt", "lte", "eq", "neq"] },
+          "threshold": { "type": "number" },
+          "for_seconds": { "type": "integer", "minimum": 0, "maximum": 86400 },
+          "description": { "type": "string" }
+        }
+      }
+    },
+    "notification": {
+      "type": "object",
+      "additionalProperties": false,
+      "required": [
+        "channel",
+        "recipients",
+        "from_address",
+        "smtp_host",
+        "smtp_port",
+        "use_starttls",
+        "credential_ref"
+      ],
+      "properties": {
+        "channel": { "const": "email" },
+        "recipients": {
+          "type": "array",
+          "minItems": 1,
+          "items": { "type": "string", "pattern": "^[^@\\s]+@[^@\\s]+$" }
+        },
+        "from_address": { "type": "string", "pattern": "^[^@\\s]+@[^@\\s]+$" },
+        "smtp_host": { "type": "string", "minLength": 1 },
+        "smtp_port": { "type": "integer", "minimum": 1, "maximum": 65535 },
+        "use_starttls": { "type": "boolean" },
+        "credential_ref": { "type": "string", "minLength": 1 }
+      }
+    }
+  }
+}

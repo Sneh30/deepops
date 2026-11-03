@@ -1,0 +1,119 @@
+{
+  "$schema": "https://json-schema.org/draft/2020-12/schema",
+  "$id": "https://opspilot.local/schema/dashboard.schema.json",
+  "title": "OpsPilot Mission Control Dashboard",
+  "description": "COMP-13 dashboard service configuration (UI_SPEC.md, ADR-008). No credentials in this file.",
+  "type": "object",
+  "additionalProperties": false,
+  "required": ["version", "server", "journal", "state", "services", "observability", "ingest", "logs"],
+  "properties": {
+    "version": { "const": "1" },
+    "server": {
+      "type": "object",
+      "additionalProperties": false,
+      "required": ["host", "port", "path_prefix", "title", "allowed_origins"],
+      "properties": {
+        "host": { "type": "string", "minLength": 1 },
+        "port": { "type": "integer", "minimum": 1, "maximum": 65535 },
+        "path_prefix": {
+          "type": "string",
+          "pattern": "^/[A-Za-z0-9._~/-]*[A-Za-z0-9._~-]$"
+        },
+        "title": { "type": "string", "minLength": 1, "maxLength": 120 },
+        "allowed_origins": {
+          "type": "array",
+          "items": { "type": "string", "minLength": 1 }
+        }
+      }
+    },
+    "journal": {
+      "type": "object",
+      "additionalProperties": false,
+      "required": ["path", "max_bytes", "max_files", "poll_interval_ms"],
+      "properties": {
+        "path": { "type": ["string", "null"] },
+        "max_bytes": { "type": "integer", "minimum": 1024, "maximum": 1073741824 },
+        "max_files": { "type": "integer", "minimum": 1, "maximum": 10 },
+        "poll_interval_ms": { "type": "integer", "minimum": 10, "maximum": 5000 }
+      }
+    },
+    "state": {
+      "type": "object",
+      "additionalProperties": false,
+      "required": [
+        "session_grace_seconds",
+        "session_idle_seconds",
+        "query_stale_seconds",
+        "recent_events",
+        "trace_limit",
+        "token_buffer_chars",
+        "snapshot_path",
+        "snapshot_interval_seconds"
+      ],
+      "properties": {
+        "session_grace_seconds": { "type": "integer", "minimum": 0, "maximum": 600 },
+        "session_idle_seconds": { "type": "integer", "minimum": 60, "maximum": 86400 },
+        "query_stale_seconds": { "type": "integer", "minimum": 1, "maximum": 86400 },
+        "recent_events": { "type": "integer", "minimum": 10, "maximum": 10000 },
+        "trace_limit": { "type": "integer", "minimum": 10, "maximum": 5000 },
+        "token_buffer_chars": { "type": "integer", "minimum": 1000, "maximum": 1000000 },
+        "snapshot_path": { "type": ["string", "null"] },
+        "snapshot_interval_seconds": { "type": "integer", "minimum": 1, "maximum": 300 }
+      }
+    },
+    "services": {
+      "type": "object",
+      "additionalProperties": false,
+      "required": ["palette"],
+      "properties": {
+        "palette": {
+          "type": "array",
+          "minItems": 1,
+          "maxItems": 64,
+          "items": { "type": "string", "pattern": "^#[0-9A-Fa-f]{6}$" }
+        }
+      }
+    },
+    "observability": {
+      "type": "object",
+      "additionalProperties": false,
+      "required": ["prometheus_url", "scrape_interval_seconds", "timeout_seconds", "queries"],
+      "properties": {
+        "prometheus_url": { "type": "string", "pattern": "^https?://[^\\s]+$" },
+        "scrape_interval_seconds": { "type": "integer", "minimum": 5, "maximum": 3600 },
+        "timeout_seconds": { "type": "integer", "minimum": 1, "maximum": 120 },
+        "queries": {
+          "type": "array",
+          "items": {
+            "type": "object",
+            "additionalProperties": false,
+            "required": ["name", "query"],
+            "properties": {
+              "name": { "type": "string", "pattern": "^[A-Za-z_][A-Za-z0-9_]{0,63}$" },
+              "query": { "type": "string", "minLength": 1 }
+            }
+          }
+        }
+      }
+    },
+    "ingest": {
+      "type": "object",
+      "additionalProperties": false,
+      "required": ["enabled", "token_env", "max_request_bytes"],
+      "properties": {
+        "enabled": { "type": "boolean" },
+        "token_env": { "type": "string", "pattern": "^[A-Z][A-Z0-9_]{2,127}$" },
+        "max_request_bytes": { "type": "integer", "minimum": 1024, "maximum": 1048576 }
+      }
+    },
+    "logs": {
+      "type": "object",
+      "additionalProperties": false,
+      "required": ["glob", "limit"],
+      "properties": {
+        "glob": { "type": "string", "minLength": 1, "maxLength": 64 },
+        "limit": { "type": "integer", "minimum": 1, "maximum": 10000 }
+      }
+    }
+  }
+}

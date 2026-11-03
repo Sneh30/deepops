@@ -1,0 +1,14 @@
+apiVersion: 1
+
+providers:
+  - name: OpsPilot
+    orgId: 1
+    folder: OpsPilot
+    type: file
+    disableDeletion: true
+    editable: false
+    updateIntervalSeconds: 30
+    allowUiUpdates: false
+    options:
+      path: C:\ProgramData\OpsPilot\grafana\dashboards
+      foldersFromFilesStructure: false

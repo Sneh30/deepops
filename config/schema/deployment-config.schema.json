@@ -1,0 +1,119 @@
+{
+  "$schema": "https://json-schema.org/draft/2020-12/schema",
+  "$id": "https://opspilot.local/schema/deployment-config.schema.json",
+  "title": "OpsPilot Deployment Configuration",
+  "description": "Application packaging and rollout metadata (FR-010 to FR-013, AP-6).",
+  "type": "object",
+  "additionalProperties": false,
+  "required": ["version", "app", "rollout"],
+  "properties": {
+    "version": { "const": "1" },
+    "app": {
+      "type": "object",
+      "additionalProperties": false,
+      "required": [
+        "name",
+        "package_type",
+        "package_path",
+        "version",
+        "environment",
+        "ports",
+        "health_check"
+      ],
+      "properties": {
+        "name": { "type": "string", "pattern": "^[a-z][a-z0-9-]{1,40}$" },
+        "package_type": { "enum": ["windows_service", "windows_container"] },
+        "package_path": { "type": "string", "minLength": 1 },
+        "version": { "type": "string", "pattern": "^[0-9A-Za-z][0-9A-Za-z._-]{0,63}$" },
+        "environment": { "enum": ["development", "staging", "production"] },
+        "service_account": { "type": "string", "minLength": 1 },
+        "executable": { "type": "string", "minLength": 1 },
+        "arguments": {
+          "type": "array",
+          "items": { "type": "string" }
+        },
+        "ports": {
+          "type": "array",
+          "items": { "type": "integer", "minimum": 1, "maximum": 65535 },
+          "minItems": 1,
+          "uniqueItems": true
+        },
+        "health_check": {
+          "type": "object",
+          "additionalProperties": false,
+          "required": ["type", "interval_seconds", "timeout_seconds", "failure_threshold"],
+          "properties": {
+            "type": { "enum": ["http", "tcp", "process"] },
+            "url": { "type": "string", "minLength": 1 },
+            "host": { "type": "string", "minLength": 1 },
+            "port": { "type": "integer", "minimum": 1, "maximum": 65535 },
+            "process_name": { "type": "string", "minLength": 1 },
+            "interval_seconds": { "type": "integer", "minimum": 5, "maximum": 300 },
+            "timeout_seconds": { "type": "integer", "minimum": 1, "maximum": 120 },
+            "success_threshold": { "type": "integer", "minimum": 1, "maximum": 10, "default": 1 },
+            "failure_threshold": { "type": "integer", "minimum": 1, "maximum": 10, "default": 3 }
+          },
+          "allOf": [
+            {
+              "if": { "properties": { "type": { "const": "http" } } },
+              "then": { "required": ["url"] }
+            },
+            {
+              "if": { "properties": { "type": { "const": "tcp" } } },
+              "then": { "required": ["port"] }
+            },
+            {
+              "if": { "properties": { "type": { "const": "process" } } },
+              "then": { "required": ["process_name"] }
+            }
+          ]
+        },
+        "container": {
+          "type": "object",
+          "additionalProperties": false,
+          "required": ["image", "base", "container_port"],
+          "properties": {
+            "image": { "type": "string", "minLength": 1 },
+            "base": {
+              "type": "string",
+              "pattern": "^mcr\\.microsoft\\.com/windows/(servercore|nanoserver):[A-Za-z0-9._-]+$"
+            },
+            "container_port": { "type": "integer", "minimum": 1, "maximum": 65535 }
+          }
+        },
+        "env": {
+          "type": "object",
+          "additionalProperties": { "type": "string" }
+        }
+      },
+      "allOf": [
+        {
+          "if": { "properties": { "package_type": { "const": "windows_service" } } },
+          "then": { "required": ["executable"] }
+        },
+        {
+          "if": { "properties": { "package_type": { "const": "windows_container" } } },
+          "then": { "required": ["container"] }
+        }
+      ]
+    },
+    "rollout": {
+      "type": "object",
+      "additionalProperties": false,
+      "required": [
+        "strategy",
+        "verification_window_seconds",
+        "stability_window_seconds",
+        "max_failed_health_checks"
+      ],
+      "properties": {
+        "strategy": { "const": "blue_green" },
+        "verification_window_seconds": { "type": "integer", "minimum": 30, "maximum": 600 },
+        "stability_window_seconds": { "type": "integer", "minimum": 60, "maximum": 3600 },
+        "max_failed_health_checks": { "type": "integer", "minimum": 1, "maximum": 20 },
+        "blue_port": { "type": "integer", "minimum": 1, "maximum": 65535 },
+        "green_port": { "type": "integer", "minimum": 1, "maximum": 65535 }
+      }
+    }
+  }
+}
