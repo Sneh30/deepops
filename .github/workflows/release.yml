@@ -11,7 +11,7 @@ permissions:
 jobs:
   release:
     name: Build and publish phase bundle
-    runs-on: ubuntu-latest
+    runs-on: windows-latest
     steps:
       - uses: actions/checkout@v4
         with:
@@ -28,9 +28,9 @@ jobs:
 
       - name: Build bundle and Handoff Manifest
         env:
-          PHASE: ${{ vars.OPSPILOT_PHASE || '6' }}
+          PHASE: ${{ vars.OPSPILOT_PHASE || '7' }}
           PYTHONPATH: src
-        run: python -m orchestrator.bundle --phase "$PHASE"
+        run: python -m orchestrator.bundle --phase "$env:PHASE"
 
       - name: Attach bundle to the GitHub Release
         uses: softprops/action-gh-release@v2
