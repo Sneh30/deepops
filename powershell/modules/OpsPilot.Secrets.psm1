@@ -20,9 +20,18 @@ function Initialize-OpsPilotSecretRoot {
     if (-not (Test-Path -LiteralPath $Root -PathType Container)) {
         New-Item -ItemType Directory -Path $Root -Force | Out-Null
     }
-    # Restrict to SYSTEM and the local Administrators group by well-known SID,
-    # avoiding localized group-name assumptions.
-    & icacls.exe $Root /inheritance:r /grant:r '*S-1-5-18:(OI)(CI)F' '*S-1-5-32-544:(OI)(CI)F' | Out-Null
+    # Restrict access by well-known SID, avoiding localized group-name
+    # assumptions. The control plane runs as LocalService by default (ADR-010),
+    # so that SID and the invoking account both need access; otherwise the
+    # process that writes a secret cannot read or delete its own DPAPI blob.
+    $currentSid = [System.Security.Principal.WindowsIdentity]::GetCurrent().User.Value
+    $grants = @(
+        '*S-1-5-18:(OI)(CI)F'
+        '*S-1-5-32-544:(OI)(CI)F'
+        '*S-1-5-19:(OI)(CI)M'
+        ('*{0}:(OI)(CI)F' -f $currentSid)
+    ) | Select-Object -Unique
+    & icacls.exe $Root /inheritance:r /grant:r $grants | Out-Null
     if ($LASTEXITCODE -ne 0) {
         throw "Failed to restrict ACLs on secret root: $Root"
     }

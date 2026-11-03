@@ -12,7 +12,7 @@ import re
 from collections.abc import Mapping
 from typing import Any, Protocol
 
-from common.errors import PreconditionFailed
+from common.errors import ExecutionFailed, PreconditionFailed
 from common.process import PowerShellRunner, ps_quote
 from event_bus.publisher import EventPublisher, NullEventPublisher
 from tools_mutating.base import json_pipeline, module_script
@@ -63,9 +63,14 @@ class DpapiSecretsManager:
 
     def get(self, name: str) -> str | None:
         name = _validate_name(name)
-        output = self._call(
-            f"Get-OpsPilotSecret -Name {ps_quote(name)} -Root {ps_quote(self._root_path)}"
-        )
+        try:
+            output = self._call(
+                f"Get-OpsPilotSecret -Name {ps_quote(name)} -Root {ps_quote(self._root_path)}"
+            )
+        except ExecutionFailed as error:
+            # A corrupt or tampered DPAPI blob makes ConvertTo-SecureString fail.
+            # Surface that as a precondition failure rather than a raw PS error.
+            raise PreconditionFailed(f"secret could not be decrypted: {name}") from error
         if not isinstance(output, dict):
             raise PreconditionFailed("secret read did not return a JSON object")
         if not output.get("found"):
@@ -99,7 +104,8 @@ class DpapiSecretsManager:
             "Set-OpsPilotSecret "
             f"-Name {ps_quote(name)} "
             f"-ValueBase64 {ps_quote(encoded)} "
-            f"-Root {ps_quote(self._root_path)}"
+            f"-Root {ps_quote(self._root_path)} "
+            "-Confirm:$false"
         )
         if not isinstance(output, dict) or not output.get("stored"):
             raise PreconditionFailed(f"failed to store secret: {name}")
@@ -113,7 +119,8 @@ class DpapiSecretsManager:
     def delete(self, name: str) -> bool:
         name = _validate_name(name)
         output = self._call(
-            f"Remove-OpsPilotSecret -Name {ps_quote(name)} -Root {ps_quote(self._root_path)}"
+            f"Remove-OpsPilotSecret -Name {ps_quote(name)} -Root {ps_quote(self._root_path)} "
+            "-Confirm:$false"
         )
         removed = isinstance(output, dict) and bool(output.get("removed"))
         if removed:

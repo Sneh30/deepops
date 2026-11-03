@@ -31,7 +31,7 @@ python3 -m venv .venv
 python -m pip install -r requirements.txt -r requirements-dev.txt
 
 make lint                        # ruff + mypy + PSScriptAnalyzer
-make test                        # 175 mocked unit tests
+make test                        # 176 mocked unit tests
 terraform -chdir=src/provisioning_engine/terraform fmt -check -recursive
 terraform -chdir=src/provisioning_engine/terraform init -backend=false
 terraform -chdir=src/provisioning_engine/terraform validate
@@ -194,7 +194,7 @@ config/                 default YAML + JSON Schemas
 | Command | Host | What it proves |
 |---|---|---|
 | `make lint` | Mac or Windows | `ruff`, `mypy`, PSScriptAnalyzer clean |
-| `make test` | Mac or Windows | 175 unit tests with mocked Windows calls |
+| `make test` | Mac or Windows | 176 unit tests with mocked Windows calls |
 | `make test-integration` | **Windows only** | Real services, DPAPI, Terraform apply, containers, blue/green timing |
 | `make bundle PHASE=<n>` | Mac | Phase zip + `handoff/HANDOFF_<n>.md` |
 | `make check-config` | Mac or Windows | Default configs validate against schemas |

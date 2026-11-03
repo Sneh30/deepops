@@ -4,7 +4,7 @@ import base64
 
 import pytest
 
-from common.errors import PreconditionFailed
+from common.errors import ExecutionFailed, PreconditionFailed
 from secrets_manager.dpapi import DpapiSecretsManager
 
 
@@ -48,6 +48,17 @@ def test_set_encodes_value_and_requires_stored() -> None:
     assert "Set-OpsPilotSecret" in runner.scripts[0]
     assert "czNjcmV0" in runner.scripts[0]
     assert "s3cret" not in runner.scripts[0]
+    assert "-Confirm:$false" in runner.scripts[0]
+
+
+def test_get_translates_decryption_failure_to_precondition_failed() -> None:
+    class FailingRunner:
+        def run_json(self, script: str, *, timeout_seconds: float = 120, cwd=None) -> object:
+            raise ExecutionFailed("PowerShell script exited with code 1")
+
+    manager = DpapiSecretsManager(runner=FailingRunner())  # type: ignore[arg-type]
+    with pytest.raises(PreconditionFailed):
+        manager.get("tampered")
 
 
 def test_set_rejects_empty_value() -> None:
@@ -67,6 +78,7 @@ def test_delete_returns_boolean() -> None:
     runner = FakeRunner([{"removed": True}])
     manager = DpapiSecretsManager(runner=runner)  # type: ignore[arg-type]
     assert manager.delete("old-secret") is True
+    assert "-Confirm:$false" in runner.scripts[0]
 
 
 def test_list_names_is_sorted() -> None:

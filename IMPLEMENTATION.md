@@ -243,7 +243,7 @@ commands in §7 after any change.
 |---|---|---|
 | Python lint | `ruff check src tests` | clean |
 | Python types | `mypy src` | success, 81 source files |
-| Unit tests | `pytest tests/unit` | 175 passed |
+| Unit tests | `pytest tests/unit` | 176 passed |
 | PowerShell analysis | `pwsh -NoProfile -File powershell/lint.ps1` via `make lint-powershell` | PSScriptAnalyzer: clean |
 | Terraform formatting | `terraform -chdir=src/provisioning_engine/terraform fmt -check -recursive` | pass |
 | Terraform validation | `terraform -chdir=src/provisioning_engine/terraform validate` | pass (no backend, no apply) |
@@ -276,7 +276,7 @@ New tests for this phase:
 
 Observed Phase 7 checks:
 
-- `pytest tests/unit` — **175 passed** (one third-party `StarletteDeprecationWarning` from FastAPI's `TestClient` about `httpx`; no test failure).
+- `pytest tests/unit` — **176 passed** (one third-party `StarletteDeprecationWarning` from FastAPI's `TestClient` about `httpx`; no test failure).
 - `ruff check src tests` — clean.
 - `mypy src` — success, 81 source files.
 - PSScriptAnalyzer — clean for the dashboard installer changes.
