@@ -1,5 +1,5 @@
 # Handoff Manifest — Phase 7
-Commit: 1f0f69e4e896bce2784f34b62e2e3baf8450b984   Generated: 2026-11-03T08:10:22+00:00   Bundle: dist/opspilot-cloud-7-1f0f69e4e896.zip
+Commit: 64150577dba1fedc97d4596628ebb204e76f27d3   Generated: 2026-11-03T09:20:16+00:00   Bundle: dist/opspilot-cloud-7-64150577dba1.zip
 
 ## Verified-Mac (evidence attached/linked)
 - IMPL-701: Internal event bus (in-process pub/sub, `asyncio.Queue`-backed) — SAS.md §5.1 — Verified-Mac — evidence: `pytest tests/unit`, `ruff check src tests`, `mypy src`, PSScriptAnalyzer, and this bundle's contents

@@ -1,5 +1,5 @@
 # Handoff Manifest — Phase 0
-Commit: 1f0f69e4e896bce2784f34b62e2e3baf8450b984   Generated: 2026-11-03T08:10:21+00:00   Bundle: dist/opspilot-cloud-0-1f0f69e4e896.zip
+Commit: 64150577dba1fedc97d4596628ebb204e76f27d3   Generated: 2026-11-03T09:20:15+00:00   Bundle: dist/opspilot-cloud-0-64150577dba1.zip
 
 ## Verified-Mac (evidence attached/linked)
 - IMPL-001: Create repo structure per §1 — Verified-Mac — evidence: `pytest tests/unit`, `ruff check src tests`, `mypy src`, PSScriptAnalyzer, and this bundle's contents
