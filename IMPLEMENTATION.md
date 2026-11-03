@@ -248,14 +248,15 @@ commands in §7 after any change.
 | Terraform formatting | `terraform -chdir=src/provisioning_engine/terraform fmt -check -recursive` | pass |
 | Terraform validation | `terraform -chdir=src/provisioning_engine/terraform validate` | pass (no backend, no apply) |
 | Config validation | `python -m orchestrator.cli check-config` | all five default configs valid (host, deployment, alerts, approval, dashboard) |
+| Windows CI | GitHub Actions `.github/workflows/ci.yml` on `windows-latest` | authoring and integration jobs passed in run [41610940276](https://github.com/Sneh30/deepops/actions/runs/41610940276) at code commit `f2c685a`; Terraform/container cases skipped when those binaries are absent |
 
 Per-phase Mac evidence:
 
 | Phase | Mac tasks recorded `Verified-Mac` | Evidence |
 |---|---|---|
-| 0 | IMPL-001–005 | Repository structure, `Makefile`, CI workflow definitions (authored, **not executed**), initial config schemas, and dependency-audit seed are present; lint/type/unit checks pass. |
+| 0 | IMPL-001–005 | Repository structure, `Makefile`, CI workflow definitions (Windows authoring workflow executed on `windows-latest`; deploy/release workflows still unexecuted), initial config schemas, and dependency-audit seed are present; lint/type/unit checks pass. |
 | 1 | IMPL-101–106 | Terraform module validates; provisioning wrapper, Windows Service registration logic, DPAPI wrapper, reverse-proxy/ACME configuration generation, and unit tests pass with Windows calls mocked. |
-| 2 | IMPL-201–203 | Windows-image build definitions, blue/green deployment engine, and CI trigger logic are covered by unit tests; the workflows are authored but **not executed**. |
+| 2 | IMPL-201–203 | Windows-image build definitions, blue/green deployment engine, and CI trigger logic are covered by unit tests; the deploy/release workflows are authored but **not executed**, and the container build itself remains IMPL-210. |
 | 3 | IMPL-301–303 | Log aggregation, utilization sampling, metrics configuration, pinned stack installer, and Grafana dashboard JSON are covered by unit/static checks. |
 | 4 | IMPL-401–405 | Incident detection/remediation/escalation and approval-gate behavior are covered by unit tests, including negative approval cases. |
 | 5 | IMPL-501–502 | Hardening and drift-detection logic is covered by unit/static checks; the hardening checklist itself is Windows-only (IMPL-510/511). |

@@ -10,9 +10,13 @@ verified on macOS, then installed and runtime-verified on Windows. There is no W
 Linux-container, or bash dependency in the supported runtime path.
 
 > **Verification status:** all Mac-side source, lint, type, unit-test, Terraform, and
-> PowerShell-analysis checks pass (see `IMPLEMENTATION.md` §4.1). Windows-only runtime
-> checks are **not** claimed as passing; they are tracked in `IMPLEMENTATION.md` §4.2
-> and in `handoff/HANDOFF_<phase>.md` for the Windows-side agent.
+> PowerShell-analysis checks pass (see `IMPLEMENTATION.md` §4.1). The `windows-latest`
+> CI authoring and integration jobs also pass (run
+> [41610940276](https://github.com/Sneh30/deepops/actions/runs/41610940276)), but that
+> runner exercise does **not** cover the Windows Service/install/ACME/blue-green
+> acceptance rows. Those runtime checks are **not** claimed as passing; they are tracked
+> in `IMPLEMENTATION.md` §4.2 and in `handoff/HANDOFF_<phase>.md` for the Windows-side
+> agent.
 
 ## Platform model
 
