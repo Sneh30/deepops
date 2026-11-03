@@ -1,5 +1,7 @@
 from __future__ import annotations
 
+import sys
+
 import pytest
 
 from approval_gate.gate import ApprovalGate
@@ -35,7 +37,7 @@ def test_read_only_registry_accepts_read_only_tool() -> None:
     registry = ReadOnlyToolRegistry([SystemInfoTool()])
     result = registry.execute("get_system_info", {})
     assert result.status == "success"
-    assert result.output["windows"] is False
+    assert result.output["windows"] is (sys.platform == "win32")
 
 
 def test_read_only_registry_rejects_mutating_tool() -> None:
