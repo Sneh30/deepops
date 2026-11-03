@@ -1,5 +1,5 @@
 # Handoff Manifest — Phase 6
-Commit: 64150577dba1fedc97d4596628ebb204e76f27d3   Generated: 2026-11-03T09:20:16+00:00   Bundle: dist/opspilot-cloud-6-64150577dba1.zip
+Commit: 06980b1eb129a1a885c85431334c306decd14e54   Generated: 2026-11-03T09:29:00+00:00   Bundle: dist/opspilot-cloud-6-06980b1eb129.zip
 
 ## Verified-Mac (evidence attached/linked)
 - IMPL-601: One-call rollback API (restore from checkpoint, full state equality verification) — Verified-Mac — evidence: `pytest tests/unit`, `ruff check src tests`, `mypy src`, PSScriptAnalyzer, and this bundle's contents

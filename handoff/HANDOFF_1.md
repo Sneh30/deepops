@@ -1,5 +1,5 @@
 # Handoff Manifest — Phase 1
-Commit: 64150577dba1fedc97d4596628ebb204e76f27d3   Generated: 2026-11-03T09:20:15+00:00   Bundle: dist/opspilot-cloud-1-64150577dba1.zip
+Commit: 06980b1eb129a1a885c85431334c306decd14e54   Generated: 2026-11-03T09:28:59+00:00   Bundle: dist/opspilot-cloud-1-06980b1eb129.zip
 
 ## Verified-Mac (evidence attached/linked)
 - IMPL-101: Terraform module skeleton for baseline host networking/firewall (`src/provisioning_engine/terraform/`) — Verified-Mac — evidence: `pytest tests/unit`, `ruff check src tests`, `mypy src`, PSScriptAnalyzer, and this bundle's contents
