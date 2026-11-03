@@ -49,6 +49,16 @@ def test_build_bundle_creates_zip_and_manifest(tmp_path) -> None:
     assert "IMPL-102" in text
     assert "Requires Windows Verification" in text
     assert "Explicitly NOT Verified" in text
+    import zipfile
+
+    with zipfile.ZipFile(bundle) as archive:
+        names = archive.namelist()
+    assert "handoff/HANDOFF_1.md" in names
+    assert not [
+        name
+        for name in names
+        if name.startswith("handoff/") and name != "handoff/HANDOFF_1.md"
+    ]
 
 
 def test_unknown_phase_fails(tmp_path) -> None:

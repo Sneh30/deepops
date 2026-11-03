@@ -117,7 +117,10 @@ def build_bundle(repo: Path, phase: str, output_dir: Path | None = None) -> tupl
     with zipfile.ZipFile(bundle_path, "w", compression=zipfile.ZIP_DEFLATED) as archive:
         for path in tracked_files(repo):
             relative = path.relative_to(repo)
-            if relative.parts[0] in {"dist", ".git"}:
+            if relative.parts[0] in {"dist", ".git", "handoff"}:
+                # Handoff manifests are generated after the payload snapshot;
+                # they are appended below so the archive never embeds a stale
+                # manifest from an earlier run.
                 continue
             archive.write(path, arcname=str(relative))
 
@@ -132,6 +135,8 @@ def build_bundle(repo: Path, phase: str, output_dir: Path | None = None) -> tupl
     )
     manifest_path = repo / "handoff" / f"HANDOFF_{phase}.md"
     atomic_write_text(manifest_path, manifest)
+    with zipfile.ZipFile(bundle_path, "a", compression=zipfile.ZIP_DEFLATED) as archive:
+        archive.write(manifest_path, arcname=str(manifest_path.relative_to(repo)))
     return bundle_path, manifest_path
 
 
