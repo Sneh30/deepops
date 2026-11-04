@@ -1,5 +1,5 @@
 # Handoff Manifest — Phase 2
-Commit: 06980b1eb129a1a885c85431334c306decd14e54   Generated: 2026-11-03T09:28:59+00:00   Bundle: dist/opspilot-cloud-2-06980b1eb129.zip
+Commit: 283cb174a9da6e9117c7dad07096df9b45a09eb1   Generated: 2026-11-04T07:33:16+00:00   Bundle: dist/opspilot-cloud-2-283cb174a9da.zip
 
 ## Verified-Mac (evidence attached/linked)
 - IMPL-201: Windows Container image build script (Dockerfile targeting `mcr.microsoft.com/windows/servercore` or `nanoserver` base) — Verified-Mac — evidence: `pytest tests/unit`, `ruff check src tests`, `mypy src`, PSScriptAnalyzer, and this bundle's contents
