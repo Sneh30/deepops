@@ -229,6 +229,9 @@
     const matrix = $("matrix");
     const empty = $("matrix-empty");
     if (!state) return;
+    // Rebuild on every state application. Without this, each SSE state frame
+    // appends a second copy of the grid below the first one.
+    matrix.innerHTML = "";
     const users = state.users || [];
     const services = state.services || [];
     const adapter = state.query_adapter || {};
